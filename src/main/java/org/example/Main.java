@@ -18,7 +18,7 @@ Cinema:
 public class Main {
     public static void main(String[] args) {
 
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 9; i++) {//inicializo i en 0, mientras i sea menor a 9, incremento i en 1
             if (i == 0) {
                 System.out.println("Cinema:");
             } else if (i == 1) {
