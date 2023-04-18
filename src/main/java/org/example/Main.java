@@ -1,195 +1,269 @@
 package org.example;
 /*
-¡El menú, por favor!
-5 / 5 Requisitos previos
-Declaración de cambio
-Declarar un método
-El método principal
-Descomposición funcional
-Matrices como parámetros
-Descripción
-El teatro se está volviendo popular y los clientes comenzaron a quejarse de que no es práctico que el programa se detenga después de comprar un boleto. Agreguemos un menú que les permitirá comprar boletos y mostrar el estado actual de la disposición de los asientos cuando sea necesario.
+Description
+Running a cinema theatre is no easy business. To help our friends, let's add statistics to your program. The stats will show the current income, total income, the number of available seats, and the percentage of occupancy.
 
-Objetivos
-Al principio, su programa debe leer dos números enteros positivos que representen el número de filas y asientos en cada fila. Luego, debe imprimir un menú con los siguientes tres elementos:
+In addition, our friends asked you to take care of a small inconvenience: it's not good when a user can buy a ticket that has already been purchased by another user. Let's fix this!
 
-Show the seatsdebe imprimir la disposición actual de los asientos. Los asientos vacíos deben estar marcados con un Ssímbolo y los asientos ocupados están marcados con un Bsímbolo.
-Buy a ticketdebe leer las coordenadas del asiento desde la entrada e imprimir el precio del boleto como en la etapa anterior. Después de eso, el asiento elegido debe marcarse con una Bcuando Show the seatsse llama el elemento.
-Exitdebe detener el programa.
-Ejemplo
-El símbolo mayor que seguido de un espacio ( > ) representa la entrada del usuario. Tenga en cuenta que no es parte de la entrada.
+Objectives
+Now your menu should look like this:
+
+1. Show the seats
+2. Buy a ticket
+3. Statistics
+0. Exit
+When the item Statistics is chosen, your program should print the following information:
+
+The number of purchased tickets;
+The number of purchased tickets represented as a percentage. Percentages should be rounded to 2 decimal places;
+Current income;
+The total income that shows how much money the theatre will get if all the tickets are sold.
+The rest of the menu items should work the same way as before, except the item Buy a ticket shouldn't allow a user to buy a ticket that has already been purchased.
+
+If a user chooses an already taken seat, print That ticket has already been purchased! and ask them to enter different seat coordinates until they pick an available seat. Of course, you shouldn't allow coordinates that are out of bounds. If this happens, print Wrong input! and ask to enter different seat coordinates until the user picks an available seat.
+
+Examples
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
 
 Enter the number of rows:
-> 7
+> 6
 Enter the number of seats in each row:
-> 7
+> 6
 
 1. Show the seats
 2. Buy a ticket
+3. Statistics
 0. Exit
-> 1
+> 3
 
-Cinema:
-  1 2 3 4 5 6 7
-1 S S S S S S S
-2 S S S S S S S
-3 S S S S S S S
-4 S S S S S S S
-5 S S S S S S S
-6 S S S S S S S
-7 S S S S S S S
+Number of purchased tickets: 0
+Percentage: 0.00%
+Current income: $0
+Total income: $360
 
 1. Show the seats
 2. Buy a ticket
+3. Statistics
 0. Exit
 > 2
+
+Enter a row number:
+> 1
+Enter a seat number in that row:
+> 1
+
+Ticket price: $10
+
+1. Show the seats
+2. Buy a ticket
+3. Statistics
+0. Exit
+> 3
+
+Number of purchased tickets: 1
+Percentage: 2.78%
+Current income: $10
+Total income: $360
+
+1. Show the seats
+2. Buy a ticket
+3. Statistics
+0. Exit
+> 2
+
+Enter a row number:
+> 1
+Enter a seat number in that row:
+> 1
+
+That ticket has already been purchased!
+
+Enter a row number:
+> 10
+Enter a seat number in that row:
+> 20
+
+Wrong input!
 
 Enter a row number:
 > 4
 Enter a seat number in that row:
-> 5
+> 4
+
 Ticket price: $10
 
 1. Show the seats
 2. Buy a ticket
+3. Statistics
 0. Exit
 > 1
 
 Cinema:
-  1 2 3 4 5 6 7
-1 S S S S S S S
-2 S S S S S S S
-3 S S S S S S S
-4 S S S S B S S
-5 S S S S S S S
-6 S S S S S S S
-7 S S S S S S S
+  1 2 3 4 5 6
+1 B S S S S S
+2 S S S S S S
+3 S S S S S S
+4 S S S B S S
+5 S S S S S S
+6 S S S S S S
 
 1. Show the seats
 2. Buy a ticket
+3. Statistics
 0. Exit
-> 2
+> 3
 
-Enter a row number:
-> 6
-Enter a seat number in that row:
-> 6
-Ticket price: $10
-
-1. Show the seats
-2. Buy a ticket
-0. Exit
-> 1
-
-Cinema:
-  1 2 3 4 5 6 7
-1 S S S S S S S
-2 S S S S S S S
-3 S S S S S S S
-4 S S S S B S S
-5 S S S S S S S
-6 S S S S S B S
-7 S S S S S S S
+Number of purchased tickets: 2
+Percentage: 5.56%
+Current income: $20
+Total income: $360
 
 1. Show the seats
 2. Buy a ticket
+3. Statistics
 0. Exit
 > 0
-*/
+ */
 
 import java.util.Scanner;
 
 public class Main {
+    static Scanner scanner = new Scanner(System.in);
     static int rows;
-    static int seats;
-    static char[][] seating;
-
+    static int seatsPerRow;
+    static int totalSeats;
+    static int currentIncome;
+    static int totalIncome;
+    static boolean[][] seats;
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-
+        readInput();
+        initSeats();
+        menu();
+    }
+    public static void readInput() {
         System.out.println("Enter the number of rows:");
         rows = scanner.nextInt();
         System.out.println("Enter the number of seats in each row:");
-        seats = scanner.nextInt();
+        seatsPerRow = scanner.nextInt();
+        totalSeats = rows * seatsPerRow;
+        totalIncome = calculateTotalIncome();
+    }
 
-        seating = new char[rows][seats];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < seats; j++) {
-                seating[i][j] = 'S';
-            }
-        }
+    public static void initSeats() {
+        seats = new boolean[rows][seatsPerRow];
+    }
 
-        boolean exit = false;
-        while (!exit) {
-            System.out.println("\n1. Show the seats\n2. Buy a ticket\n0. Exit");
-            switch (scanner.nextInt()) {
-                case 0:
-                    exit = true;
-                    break;
+    public static void menu() {
+        while (true) {
+            System.out.println("\n1. Show the seats\n2. Buy a ticket\n3. Statistics\n0. Exit");
+            int choice = scanner.nextInt();
+            switch (choice) {
                 case 1:
                     showSeats();
                     break;
                 case 2:
-                    buyTicket(scanner);
+                    buyTicket();
                     break;
+                case 3:
+                    showStatistics();
+                    break;
+                case 0:
+                    return;
                 default:
-                    System.out.println("Invalid input");
-                    break;
+                    System.out.println("Wrong input!");
             }
         }
     }
 
     public static void showSeats() {
         System.out.println("\nCinema:");
-        System.out.print(" ");
-        for (int i = 1; i <= seats; i++) {
-            System.out.print(" " + i);
+        System.out.print("  ");
+        for (int i = 1; i <= seatsPerRow; i++) {
+            System.out.print(i + " ");
         }
         System.out.println();
         for (int i = 0; i < rows; i++) {
             System.out.print((i + 1) + " ");
-            for (int j = 0; j < seats; j++) {
-                System.out.print(seating[i][j] + " ");
+            for (int j = 0; j < seatsPerRow; j++) {
+                System.out.print(seats[i][j] ? "B " : "S ");
             }
             System.out.println();
         }
     }
 
-    public static void buyTicket(Scanner scanner) {
+    public static void buyTicket() {
         int row;
         int seat;
-        boolean valid = false;
-        while (!valid) {
+        while (true) {
             System.out.println("\nEnter a row number:");
             row = scanner.nextInt() - 1;
             System.out.println("Enter a seat number in that row:");
             seat = scanner.nextInt() - 1;
-            if (row >= 0 && row < rows && seat >= 0 && seat < seats) {
-                if (seating[row][seat] == 'B') {
-                    System.out.println("That ticket has already been purchased");
-                } else {
-                    int price = calculatePrice(row);
-                    System.out.println("Ticket price: $" + price);
-                    seating[row][seat] = 'B';
-                    valid = true;
-                }
+            if (row < 0 || row >= rows || seat < 0 || seat >= seatsPerRow) {
+                System.out.println("Wrong input!");
+            } else if (seats[row][seat]) {
+                System.out.println("That ticket has already been purchased!");
             } else {
-                System.out.println("Invalid input");
+                break;
             }
         }
+        seats[row][seat] = true;
+        int ticketPrice = calculateTicketPrice(row, rows, seatsPerRow);
+        System.out.printf("Ticket price: $%d\n", ticketPrice);
+        currentIncome += ticketPrice;
     }
 
-    public static int calculatePrice(int row) {
-        int totalSeats = rows * seats;
-        if (totalSeats <= 60) {
-            return 10;
+    public static void showStatistics() {
+        int purchasedTickets = calculatePurchasedTickets();
+        double percentage = calculatePercentage(purchasedTickets, totalSeats);
+        System.out.printf("\nNumber of purchased tickets: %d\n", purchasedTickets);
+        System.out.printf("Percentage: %.2f%%\n", percentage);
+        System.out.printf("Current income: $%d\n", currentIncome);
+        System.out.printf("Total income: $%d\n", totalIncome);
+    }
+
+    public static int calculateTicketPrice(int row, int numberOfRows, int numberOfSeatsInRow) {
+        int totalSeats = numberOfRows * numberOfSeatsInRow;
+        int frontHalfPrice = 10;
+        int backHalfPrice = 8;
+        int ticketPrice;
+
+        if (totalSeats < 60) {
+            ticketPrice = 10;
         } else {
-            int frontHalf = rows / 2;
-            if (row < frontHalf) {
-                return 10;
+            if (row < numberOfRows / 2) {
+                ticketPrice = frontHalfPrice;
             } else {
-                return 8;
+                ticketPrice = backHalfPrice;
             }
         }
+
+        return ticketPrice;
+    }
+
+
+    public static int calculateTotalIncome() {
+        int frontRows = rows / 2;
+        int backRows = rows - frontRows;
+        return frontRows * seatsPerRow * 10 + backRows * seatsPerRow * 8;
+    }
+
+    public static double calculatePercentage(int numerator, int denominator) {
+        if (denominator == 0) {
+            return 0.0;
+        }
+        return (double) numerator / denominator * 100.0;
+    }
+
+    public static int calculatePurchasedTickets() {
+        int purchasedTickets = 0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < seatsPerRow; j++) {
+                if (seats[i][j]) {
+                    purchasedTickets++;
+                }
+            }
+        }
+        return purchasedTickets;
     }
 }
